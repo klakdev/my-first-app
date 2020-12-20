@@ -1,0 +1,7 @@
+
+GET http://localhost:3000/user/1234567890ab HTTP/1.1
+
+
+##
+
+
