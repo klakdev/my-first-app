@@ -1,26 +1,10 @@
 const crypto = require('crypto');
 const express = require("express");
 const validator = require("validator");
+const db = require("../db");
+
+
 const route = express.Router()
-
-const users = [{
-  id: "1234567890abcdef",
-  firstName: "Yaki",
-  lastName: "Klein",
-  email: "klein.yaki@gmail.com",
-  profilePicture: "https://lh3.googleusercontent.com/ogw/ADGmqu-pwHEOTj0WSDdjvNS48YAf47SprbVrJ8aLoUkdXRo=s32-c-mo"
-}];
-
-
-route.get("/:id", (req, res, next) => {
-  const user = users.find(user => user.id === req.params.id);
-  if(user) {
-    res.json(user);
-    return;
-  }
-  next();
-});
-
 
 /**
  * @typedef {object} User
@@ -29,8 +13,15 @@ route.get("/:id", (req, res, next) => {
  * @property {string} lastName
  * @property {string} email
  * @property {string} profilePicture
+ * @property {string} birthday
  * 
  */
+
+/**
+ * this is an in memory array used for demonstrating the behavior of th different apis
+ * @type {User[]} users
+ */
+const users = [];
 
 /**
  * 
@@ -42,7 +33,7 @@ function validateUser(body, enforce) {
     throw new Error("Invalid body");
   }
 
-  const { email, firstName, lastName, id, profilePicture } = body;
+  const { email, firstName, lastName, id, profilePicture, birthday } = body;
   if(enforce && !email || email && !validator.isEmail(email)) {
     throw new Error("Invalid email");
   }
@@ -59,16 +50,36 @@ function validateUser(body, enforce) {
     email,
     firstName,
     lastName,
-    profilePicture: profilePicture || null
+    profilePicture,
+    birthday
   }
 }
 
-route.post("/", (req, res) => {
+route.get("/:id", async (req, res, next) => {
+  const { id } = req.params;
+  //for in memory usage
+  //const user = users.find(user => user.id === req.params.id);
+  if("string" !== typeof id || id.length !== 16) {
+    next();
+    return;
+  }
+  const user = await db.user.findOne({ where: { id } });
+  if(user) {
+    res.json(user.toJSON());
+    return;
+  }
+  next();
+});
+
+
+route.post("/", async (req, res) => {
   const { body } = req;
   try {
     const user = validateUser(body, false);
-    users.push(user);
-    res.json(user);
+    //for in memory usage
+    //users.push(user);
+    const newUser = await db.user.create(user);
+    res.json(newUser);
   } catch(e) {
     res.status(422).json({
       error: e.message,
@@ -76,17 +87,23 @@ route.post("/", (req, res) => {
   }
 })
 
-route.patch("/:id", (req, res, next) => {
-  const { body } = req;
+route.patch("/:id", async (req, res, next) => {
+  const { body, params: { id } } = req;
   try {
-    const userIndex = users.findIndex(user => user.id === req.params.id);
-    if(userIndex < 0) {
+    const oldUser = await db.user.findOne({ where: { id }, json: true });
+    if(!oldUser) {
       return next()
     }
-    const { id } = req.params;
-    const updatedUser = validateUser({ ...users[userIndex], ...body, id }, false);
-    users.splice(userIndex, 1, updatedUser);
-    res.json(updatedUser);
+
+    const updatedUser = validateUser({ ...oldUser.toJSON(), ...body }, false);
+    //for in memory usage
+    //users.splice(userIndex, 1, updatedUser);
+    const [_result, users] = await db.user.update(updatedUser, { 
+      where: { id }, 
+      returning: true,
+      fields: Object.keys(body)
+    });
+    res.json(users[0].toJSON());
   } catch(e) {
     res.status(422).json({
       error: e.message,
@@ -94,14 +111,18 @@ route.patch("/:id", (req, res, next) => {
   }
 })
 
-route.delete("/:id", (req, res, next) => {
-  const { body } = req;
+route.delete("/:id", async (req, res, next) => {
+  const { params: { id } } = req;
   try {
-    const userIndex = users.findIndex(user => user.id === req.params.id);
-    if(userIndex < 0) {
+    //in memory db
+    //const userIndex = users.findIndex(user => user.id === req.params.id);
+    const user = await db.user.destroy({ 
+      where: { id }
+    });
+    if(user === 0) {
       return next()
     }
-    users.splice(userIndex, 1);
+    //users.splice(userIndex, 1);
     res.send("OK");
   } catch(e) {
     res.status(422).json({

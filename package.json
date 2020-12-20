@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "server": "cd ./server && npm start"
+    "server": "cd ./server && cross-env PGPASSWORD=1234567890 DEBUG=* npm run debug"
   },
   "author": "",
   "license": "ISC",
