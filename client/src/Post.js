@@ -10,11 +10,11 @@ import Collapse from '@material-ui/core/Collapse';
 import Avatar from '@material-ui/core/Avatar';
 import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
-import { red } from '@material-ui/core/colors';
 import FavoriteIcon from '@material-ui/icons/Favorite';
 import ShareIcon from '@material-ui/icons/Share';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
+import Carousel from 'react-material-ui-carousel'
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -23,7 +23,7 @@ const useStyles = makeStyles((theme) =>
     },
     media: {
       height: 0,
-      paddingTop: '56.25%', // 16:9
+      paddingTop: '40%', // 16:9
     },
     expand: {
       transform: 'rotate(0deg)',
@@ -35,13 +35,25 @@ const useStyles = makeStyles((theme) =>
     expandOpen: {
       transform: 'rotate(180deg)',
     },
-    avatar: {
-      backgroundColor: red[500],
-    },
   }),
 );
 
-export default function Post() {
+/**
+ * @typedef {object} Post
+ * @property {string} props.text 
+ * @property {object[]} props.media 
+ * @property {string} props.media.url 
+ * @property {string} props.media.type
+ * @property {string} props.date 
+ */
+
+/**
+ * 
+ * @param {object} props 
+ * @param {User} props.user 
+ * @param {Post} props.post
+ */
+export default function Post(props) {
   const classes = useStyles();
   const [expanded, setExpanded] = React.useState(false);
 
@@ -49,12 +61,17 @@ export default function Post() {
     setExpanded(!expanded);
   };
 
+  const { user, post } = props;
+  const expandable = post.text.length > 65;
+
   return (
     <Card className={classes.root}>
       <CardHeader
         avatar={
-          <Avatar aria-label="recipe" className={classes.avatar}>
-            R
+          <Avatar 
+            src={user.profilePicture}
+          >
+            {user.firstName.substr(0, 1) + user.lastName.substr(0, 1)}
           </Avatar>
         }
         action={
@@ -62,30 +79,37 @@ export default function Post() {
             <MoreVertIcon />
           </IconButton>
         }
-        title="Shrimp and Chorizo Paella"
-        subheader="September 14, 2016"
+        title={`${user.firstName} ${user.lastName}`}
+        subheader={post.date}
       />
-      <CardMedia
-        className={classes.media}
-        image="https://www.meissl.com/media/images/8f24db1f/schweiz.jpg"
-        title="Paella dish"
-      />
+      <Carousel 
+        NavButtonsAlwaysInvisible={post.media.length <= 1}
+        indicators={false}
+        animation={"fade"}
+        timeout={750}
+        autoPlay={false}
+      >
+        {post.media.map((media) => {
+          return (
+            <CardMedia
+              className={classes.media}
+              image={media.url}
+              title={media.title}
+            />
+          )
+        })}
+      </Carousel> 
       <Collapse in={!expanded} timeout="auto" unmountOnExit>
         <CardContent>
           <Typography paragraph>
-            Heat oil in a (14- to 16-inch) paella pan or a large
+            {expandable ? post.text.substr(0, 65) : post.text}
           </Typography>
         </CardContent>
       </Collapse>
       <Collapse in={expanded} timeout="auto" unmountOnExit>
         <CardContent>
           <Typography paragraph>
-            Heat oil in a (14- to 16-inch) paella pan or a large, deep skillet over medium-high
-            heat. Add chicken, shrimp and chorizo, and cook, stirring occasionally until lightly
-            browned, 6 to 8 minutes. Transfer shrimp to a large plate and set aside, leaving chicken
-            and chorizo in the pan. Add pimentón, bay leaves, garlic, tomatoes, onion, salt and
-            pepper, and cook, stirring often until thickened and fragrant, about 10 minutes. Add
-            saffron broth and remaining 4 1/2 cups chicken broth; bring to a boil.
+            {post.text}
           </Typography>
         </CardContent>
       </Collapse>
@@ -103,8 +127,11 @@ export default function Post() {
           onClick={handleExpandClick}
           aria-expanded={expanded}
           aria-label="show more"
+          display={expandable ? "visible" : "none"}
         >
-          <ExpandMoreIcon />
+          <ExpandMoreIcon 
+            
+          />
         </IconButton>
       </CardActions>
     </Card>

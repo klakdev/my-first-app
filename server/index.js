@@ -9,7 +9,7 @@ const port = 3000;
 
 const user = require("./user/index")
 
-app.use(bodyParser.json);
+app.use(bodyParser.json());
 
 app.use(user.ROUTE_PATH, user.route)
 

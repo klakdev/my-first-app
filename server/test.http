@@ -1,7 +1,28 @@
 
-GET http://localhost:3000/user/1234567890ab HTTP/1.1
+GET http://localhost:3000/user/0888996602e52ef1 HTTP/1.1
 
+###
 
-##
+POST  http://localhost:3000/user HTTP/1.1
+content-type: application/json
 
+{
+  "email": "klein@gmail.com",
+  "firstName": "ddfdfd",
+  "lastName": "Shker"
+}
 
+###
+
+PATCH http://localhost:3000/user/8e90c3b242f368a0 HTTP/1.1
+content-type: application/json
+
+{
+  "firstName": "A real name"
+}
+
+###
+
+DELETE http://localhost:3000/user/8e90c3b242f368a0 HTTP/1.1
+
+###
