@@ -1,0 +1,30 @@
+GET http://localhost:3000/post/bd930ed4aee3e46a HTTP/1.1
+
+###
+
+POST  http://localhost:3000/post HTTP/1.1
+content-type: application/json
+
+{
+  "text": "some text",
+  "media": [{
+    "url": "https://www.meissl.com/media/images/8f24db1f/schweiz.jpg"
+  }],
+  "date": "09-24-2020"
+}
+
+###
+
+PATCH http://localhost:3000/post/ff5749024689fa1c HTTP/1.1
+content-type: application/json
+
+{
+  "firstName": "YAki",
+  "profilePicture": "https://i.stack.imgur.com/Bb6z1.jpg?s=64&g=1"
+}
+
+###
+
+DELETE http://localhost:3000/post/ff5749024689fa1c HTTP/1.1
+
+###

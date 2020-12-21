@@ -1,0 +1,28 @@
+GET http://localhost:3000/user/9ff08e1fe1aa2676 HTTP/1.1
+
+###
+
+POST  http://localhost:3000/user HTTP/1.1
+content-type: application/json
+
+{
+  "email": "Klin.ki@gmail.com",
+  "firstName": "Yaki",
+  "lastName": "Shker"
+}
+
+###
+
+PATCH http://localhost:3000/user/9ff08e1fe1aa2676 HTTP/1.1
+content-type: application/json
+
+{
+  "firstName": "YAki",
+  "profilePicture": "https://i.stack.imgur.com/Bb6z1.jpg?s=64&g=1"
+}
+
+###
+
+DELETE http://localhost:3000/user/be7d2dfec48c6091 HTTP/1.1
+
+###
