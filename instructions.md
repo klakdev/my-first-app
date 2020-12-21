@@ -65,3 +65,4 @@
 ## Using an ORM
 
 1. install [sequelize](https://sequelize.org/) and [pg](https://node-postgres.com/)
+2. sequelize [documentation](https://sequelize.org/master/identifiers.html)

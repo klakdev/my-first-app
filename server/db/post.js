@@ -1,46 +1,48 @@
 const { Model, DataTypes } = require('sequelize');
+const { User } = require('./user');
 
-class User extends Model {}
+class Post extends Model {}
 
 /**
  * 
  * @param {Sequelize} sequelize - instance of sequelize
+ * @param {User} user - instance of sequelize
  */
-function init(sequelize) {
-  User.init({
+async function init(sequelize, user) {
+  Post.init({
     id: {
       allowNull: false,
       primaryKey: true,
       type: DataTypes.STRING,
     },
-    email: {
+    userId: {
       allowNull: false,
-      unique: true,
+      references: {
+        model: user,
+        key: "id"
+      },
       type: DataTypes.STRING,
     },
-    firstName: {
+    text: {
       allowNull: false,
       type: DataTypes.STRING,
     },
-    lastName :{
+    date :{
       allowNull: false,
-      type: DataTypes.STRING,
+      type: DataTypes.DATE,
     },
-    profilePicture: DataTypes.STRING,
-    birthday: DataTypes.DATE
   }, { 
     sequelize, 
-    modelName: "user",
+    modelName: "post",
     schema: "first_application",
     freezeTableName: true,
     timestamps: false
   });
-
-  return User;
+  await Post.sync();
+  return Post;
 }
 
 module.exports = {
   init,
-  User
+  Post,
 };
-

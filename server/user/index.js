@@ -1,10 +1,10 @@
 const crypto = require('crypto');
 const express = require("express");
 const validator = require("validator");
-const db = require("../db");
+const getDB = require("../db");
 
 
-const route = express.Router()
+const route = express.Router();
 
 /**
  * @typedef {object} User
@@ -63,6 +63,8 @@ route.get("/:id", async (req, res, next) => {
     next();
     return;
   }
+
+  const db = await getDB();
   const user = await db.user.findOne({ where: { id } });
   if(user) {
     res.json(user.toJSON());
@@ -78,7 +80,9 @@ route.post("/", async (req, res) => {
     const user = validateUser(body, false);
     //for in memory usage
     //users.push(user);
+    const db = await getDB();
     const newUser = await db.user.create(user);
+    res.cookie("userId", newUser.id);
     res.json(newUser);
   } catch(e) {
     res.status(422).json({
@@ -90,6 +94,7 @@ route.post("/", async (req, res) => {
 route.patch("/:id", async (req, res, next) => {
   const { body, params: { id } } = req;
   try {
+    const db = await getDB();
     const oldUser = await db.user.findOne({ where: { id }, json: true });
     if(!oldUser) {
       return next()
@@ -116,6 +121,7 @@ route.delete("/:id", async (req, res, next) => {
   try {
     //in memory db
     //const userIndex = users.findIndex(user => user.id === req.params.id);
+    const db = await getDB();
     const user = await db.user.destroy({ 
       where: { id }
     });
