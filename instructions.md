@@ -40,5 +40,28 @@
 8. explain about the importance of data validation
 9. install [validator](https://www.npmjs.com/package/validator) for validations - `npm i validator`
 10. create a validation function for user
-11. create a patch method for updating a user
-12. test the post and patch methods
+11. test the post and patch methods
+12. show invalid request
+13. show valid request
+14. show how previous request are returned
+15. update validation function with enforce
+16. explain why id in in brackets ([]) in JSDocs
+17. create a patch method for updating a user,
+18. make the validation function work well with patch as well
+19. explain the principle of [idempotent](https://stackoverflow.com/questions/31089221/what-is-the-difference-between-put-post-and-patch)
+20. delete method
+
+## DB schema
+
+1. create a `app_user` user using phAdmin
+2. give him supper user permissions
+3. create `app` database with the `app_user` the owner
+4. grant permissions to `app_user` on the database
+5. give connection limit to the database - explain
+6. all databases are created with a public schema
+7. create a table `user` with all needed columns
+8. insert and request data from the db
+
+## Using an ORM
+
+1. install [sequelize](https://sequelize.org/) and [pg](https://node-postgres.com/)
