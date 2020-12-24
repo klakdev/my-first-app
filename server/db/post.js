@@ -6,7 +6,7 @@ class Post extends Model {}
 /**
  * 
  * @param {Sequelize} sequelize - instance of sequelize
- * @param {User} user - instance of sequelize
+ * @param {User} user - User Model
  */
 async function init(sequelize, user) {
   Post.init({
@@ -38,6 +38,8 @@ async function init(sequelize, user) {
     freezeTableName: true,
     timestamps: false
   });
+  user.hasMany(Post);
+  Post.belongsTo(user)
   await Post.sync();
   return Post;
 }

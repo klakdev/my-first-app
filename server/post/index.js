@@ -84,7 +84,7 @@ route.post("/", async (req, res) => {
   try {
     const post = validatePost(body);
     const db = await getDB();
-    const newPost = await db.post.create({ post, userId });
+    const newPost = await db.post.create({ ...post, userId });
     res.json(newPost);
   } catch(e) {
     res.status(422).json({

@@ -1,5 +1,5 @@
 
-GET http://localhost:3000/user/4bdf9b35ce5eb8b7 HTTP/1.1
+GET http://localhost:3000/user/ae6259ec9350137a HTTP/1.1
 
 ###
 
@@ -7,7 +7,7 @@ POST  http://localhost:3000/user HTTP/1.1
 content-type: application/json
 
 {
-  "email": "rfdfd@gmail.com",
+  "email": "abcd@gmail.com",
   "firstName": "ddfdfd",
   "lastName": "Shker"
 }
