@@ -8,16 +8,11 @@ const route = express.Router()
 
 
 /**
- * 
- * @typedef {object} Media
- * @property {string} id 
- * @property {string} url 
- */
-/**
  * @typedef {object} Post
  * @property {string} id 
+ * @property {string} userId 
  * @property {string} text 
- * @property {Media[]} media
+ * @property {string[]} pictures
  * @property {string} date
  * 
  */
@@ -34,33 +29,48 @@ function validatePost(body, enforce) {
     throw new Error("Invalid body");
   }
 
-  const { id, text, media, date } = body;
+  const { id, text, pictures, date, userId } = body;
   if("string" !== typeof text) {
     throw new Error("Invalid text");
   }
 
-  if(!Array.isArray(media)) {
+  if("string" !== typeof userId) {
+    throw new Error("invalid userId")
+  }
+
+  if(pictures && !Array.isArray(pictures)) {
     throw new Error("Invalid media");
   }
 
-  const sMedia = media.map((m) => {
-    const { url } = m;
-    if(!validator.isURL(url)) {
+  const sPictures = pictures.map((m) => {
+    if(!validator.isURL(m)) {
       throw new Error("Invalid url");
     }
-    return {
-      id: crypto.randomBytes(8).toString("hex"),
-      url,
-    }
+    return m;
   })
 
   return {
     id: id || crypto.randomBytes(8).toString("hex"),
-    media: sMedia,
+    userId,
+    pictures: sPictures,
     text: text,
     date
   }
 }
+
+route.get("/", async (req, res) => {
+  const { query: { offset }} = req;
+  const db = await getDB();
+  const posts = await db.post.findAll({ 
+    include: "user",
+    limit: 7,
+    offset
+  });
+  res.json(posts.map(p => p.toJSON()));
+});
+
+
+
 
 route.get("/:id", async (req, res, next) => {
   const { id } = req.params;
@@ -69,7 +79,10 @@ route.get("/:id", async (req, res, next) => {
     return;
   }
   const db = await getDB();
-  const post = await db.post.findOne({ where: { id } });
+  const post = await db.post.findOne({ 
+    where: { id },
+    include: "user"
+  });
   if(post) {
     res.json(post.toJSON());
     return;
@@ -82,9 +95,9 @@ route.post("/", async (req, res) => {
   const { body } = req;
   const { userId } = req.cookies;
   try {
-    const post = validatePost(body);
+    const post = validatePost({ ...body, userId });
     const db = await getDB();
-    const newPost = await db.post.create({ ...post, userId });
+    const newPost = await db.post.create(post);
     res.json(newPost);
   } catch(e) {
     res.status(422).json({
@@ -94,14 +107,22 @@ route.post("/", async (req, res) => {
 })
 
 route.patch("/:id", async (req, res, next) => {
-  const { body, params: { id } } = req;
+  const { body, params: { id }, cookies: { userId } } = req;
   try {
     const db = await getDB();
     const oldPost = await db.post.findOne({ where: { id }, json: true });
+    
     if(!oldPost) {
       return next()
     }
-    const updatedPost = validatePost(body);
+    
+    if( userId !== oldPost.userId) {
+      return res.status(403).status({
+        error: "not permitted"
+      })
+    }
+    
+    const updatedPost = validatePost({ ...oldPost.toJSON(), ...body,  });
     const [_result, posts] = await db.post.update(updatedPost, { 
       where: { id }, 
       returning: true,
@@ -138,3 +159,5 @@ module.exports = {
   route,
   ROUTE_PATH
 }
+
+

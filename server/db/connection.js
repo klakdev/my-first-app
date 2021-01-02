@@ -1,13 +1,15 @@
 const { Sequelize } = require("sequelize");
 
-const database = "app";
-const username = "app_user";
+const host = "database-1.cnjllearqjtz.us-east-1.rds.amazonaws.com"; //localhost
+const database = "first_app";
+const username = "postgres";
 const password = process.env.PGPASSWORD;
 const dialect = "postgres";
-const schema = "first_application";
+const schema = "application";
 
 exports.getConnection = () => {
   return new Sequelize({
+    host,
     database,
     username,
     password,
@@ -15,5 +17,3 @@ exports.getConnection = () => {
     dialect,
   });
 }
-
-

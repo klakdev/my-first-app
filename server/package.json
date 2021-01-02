@@ -1,21 +1,24 @@
 {
   "name": "server",
   "version": "1.0.0",
-  "description": "The serevr side for this application",
+  "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "npm run test",
-    "debug": "nodemon --inspect index.js",
-    "start": "v DEBUG=* PGPASSWORD=1234567890 nodemon index.js"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "cross-env DEBUG=* PGPASSWORD=1234567890 nodemon ./index.js"
   },
   "dependencies": {
     "body-parser": "1.19.0",
-    "express": "^4.17.1",
+    "cookie-parser": "^1.4.5",
+    "express": "4.17.1",
     "pg": "^8.5.1",
     "pg-hstore": "^2.3.3",
-    "sequelize": "6.3.5",
-    "validator": "^13.5.2"
+    "sequelize": "6.3.5"
   },
-  "author": "Yaki Klein",
+  "devDependencies": {
+    "cross-env": "7.0.3",
+    "nodemon": "2.0.6"
+  },
+  "author": "",
   "license": "ISC"
 }

@@ -1,31 +1,42 @@
 
-GET http://localhost:3000/post/ff5749024689fa1c HTTP/1.1
+###
+GET http://localhost:3000/post/a63323f12a0897e0 HTTP/1.1
+
+
+###
+GET http://localhost:3000/post?offset=1 HTTP/1.1
 
 ###
 
 POST  http://localhost:3000/post HTTP/1.1
 content-type: application/json
+Cookie: userId=88db7068327e2b45
 
 {
-  "text": "some text",
-  "media": [{
-    "url": "https://www.meissl.com/media/images/8f24db1f/schweiz.jpg"
-  }],
+  "text": "Text for your post",
+  "pictures": [
+    "https://cdn.pixabay.com/photo/2019/12/17/14/07/amaryllis-4701720_960_720.jpg"
+    
+  ],
   "date": "09-24-2020"
 }
 
 ###
-
-PATCH http://localhost:3000/post/ff5749024689fa1c HTTP/1.1
+PATCH  http://localhost:3000/post/94bd4b62984a4032 HTTP/1.1
 content-type: application/json
+Cookie: userId=95c1cb7df28db479
 
 {
-  "firstName": "YAki",
-  "profilePicture": "https://i.stack.imgur.com/Bb6z1.jpg?s=64&g=1"
+  "text": "Text that I have edited for the post",
+  "pictures": [
+    "https://cdn.pixabay.com/photo/2019/12/17/14/07/amaryllis-4701720_960_720.jpg",
+    "https://cdn.pixabay.com/photo/2020/12/19/10/45/mountains-5844031_960_720.jpg" 
+  ]
 }
 
 ###
 
-DELETE http://localhost:3000/post/ff5749024689fa1c HTTP/1.1
+DELETE http://localhost:3000/post/a335a8b6833996d5 HTTP/1.1
 
 ###
+

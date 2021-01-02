@@ -6,7 +6,7 @@ class Post extends Model {}
 /**
  * 
  * @param {Sequelize} sequelize - instance of sequelize
- * @param {User} user - User Model
+ * @param {User} user - instance of sequelize
  */
 async function init(sequelize, user) {
   Post.init({
@@ -31,15 +31,21 @@ async function init(sequelize, user) {
       allowNull: false,
       type: DataTypes.DATE,
     },
+    pictures: {
+      type: DataTypes.ARRAY(DataTypes.STRING),
+      defaultValue: [],
+      allowNull: false,
+      alter: true,
+    }
   }, { 
     sequelize, 
     modelName: "post",
-    schema: "first_application",
+    schema: "application",
     freezeTableName: true,
     timestamps: false
   });
   user.hasMany(Post);
-  Post.belongsTo(user)
+  Post.belongsTo(user);
   await Post.sync();
   return Post;
 }

@@ -1,5 +1,5 @@
 
-GET http://localhost:3000/user/ae6259ec9350137a HTTP/1.1
+GET http://localhost:3000/user/e5d34b4862fa88f9 HTTP/1.1
 
 ###
 
@@ -7,23 +7,23 @@ POST  http://localhost:3000/user HTTP/1.1
 content-type: application/json
 
 {
-  "email": "abcd@gmail.com",
-  "firstName": "ddfdfd",
-  "lastName": "Shker"
+  "email": "yaki15@gmail.com",
+  "firstName": "yaki",
+  "lastName": "klein"
 }
 
 ###
 
-PATCH http://localhost:3000/user/be7d2dfec48c6091 HTTP/1.1
+PATCH http://localhost:3000/user/f646daf0fb03c840 HTTP/1.1
 content-type: application/json
 
 {
-  "firstName": "YAki",
+  "firstName": "Yaacov",
   "profilePicture": "https://i.stack.imgur.com/Bb6z1.jpg?s=64&g=1"
 }
 
 ###
 
-DELETE http://localhost:3000/user/be7d2dfec48c6091 HTTP/1.1
+DELETE http://localhost:3000/user/e5d34b4862fa88f9 HTTP/1.1
 
 ###

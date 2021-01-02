@@ -2,7 +2,6 @@ const crypto = require('crypto');
 const express = require("express");
 const validator = require("validator");
 const getDB = require("../db");
-const { Post } = require("../db/post");
 
 
 const route = express.Router();
@@ -66,14 +65,7 @@ route.get("/:id", async (req, res, next) => {
   }
 
   const db = await getDB();
-  const user = await db.user.findOne({ 
-    where: { id },
-    include: [
-      { model: Post },
-     ]
-  });
-
-  
+  const user = await db.user.findOne({ where: { id } });
   if(user) {
     res.json(user.toJSON());
     return;

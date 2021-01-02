@@ -6,7 +6,7 @@ class User extends Model {}
  * 
  * @param {Sequelize} sequelize - instance of sequelize
  */
-function init(sequelize) {
+async function init(sequelize) {
   User.init({
     id: {
       allowNull: false,
@@ -31,11 +31,11 @@ function init(sequelize) {
   }, { 
     sequelize, 
     modelName: "user",
-    schema: "first_application",
+    schema: "application",
     freezeTableName: true,
     timestamps: false
   });
-
+  await User.sync();
   return User;
 }
 
