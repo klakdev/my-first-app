@@ -14,6 +14,13 @@ const port = process.env.PORT || 3001
 app.use(bodyParser.json());
 app.use(cookieParser());
 
+app.use((req, res, next) => {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Credentials", "true");
+  res.setHeader("Access-Control-Allow-Methods", "PUT, POST, GET, DELETE, PATCH, OPTIONS");
+  next();
+})
+
 //routes for handling users and posts
 app.use(user.ROUTE_PATH, user.route);
 app.use(post.ROUTE_PATH, post.route);

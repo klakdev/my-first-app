@@ -23,7 +23,7 @@ const useStyles = makeStyles((theme) =>
     },
     media: {
       height: 0,
-      paddingTop: '40%', // 16:9
+      paddingTop: '50%',
     },
     expand: {
       transform: 'rotate(0deg)',
@@ -38,13 +38,12 @@ const useStyles = makeStyles((theme) =>
   }),
 );
 
+
 /**
  * @typedef {object} Post
- * @property {string} props.text 
- * @property {object[]} props.media 
- * @property {string} props.media.url 
- * @property {string} props.media.type
- * @property {string} props.date 
+ * @property {string} text 
+ * @property {string[]} pictures 
+ * @property {string} date
  */
 
 /**
@@ -83,18 +82,18 @@ export default function Post(props) {
         subheader={post.date}
       />
       <Carousel 
-        NavButtonsAlwaysInvisible={post.media.length <= 1}
+        NavButtonsAlwaysInvisible={(post.pictures || []).length <= 1}
         indicators={false}
         animation={"fade"}
         timeout={750}
         autoPlay={false}
       >
-        {post.media.map((media) => {
+        {post.pictures.map((media) => {
           return (
             <CardMedia
               className={classes.media}
-              image={media.url}
-              title={media.title}
+              image={media}
+              title={"A nice image"}
             />
           )
         })}

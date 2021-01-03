@@ -54,7 +54,7 @@ function validatePost(body, enforce) {
     userId,
     pictures: sPictures,
     text: text,
-    date
+    date: date || new Date().toUTCString()
   }
 }
 
@@ -64,7 +64,7 @@ route.get("/", async (req, res) => {
   const posts = await db.post.findAll({ 
     include: "user",
     limit: 7,
-    offset
+    offset: parseInt(offset) || undefined
   });
   res.json(posts.map(p => p.toJSON()));
 });
