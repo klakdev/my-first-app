@@ -1,7 +1,8 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
-import { Avatar, Backdrop, Container, Fade, Grid, InputAdornment, Modal } from '@material-ui/core';
+import PostAddIcon from '@material-ui/icons/PostAdd';
+import { Avatar, Backdrop, Button, Container, Fade, Grid, Modal } from '@material-ui/core';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -24,9 +25,12 @@ const useStyles = makeStyles((theme) => ({
     margin: "auto",
   },
   textbox :{
+    paddingBottom: theme.spacing(2),
+    paddingTop: theme.spacing(1),
     marginRight: "auto",
     marginLeft: "auto",
     maxWidth: "100%",
+    width: "100%",
   },
   text: {
     marginRight: "auto",
@@ -36,12 +40,19 @@ const useStyles = makeStyles((theme) => ({
     color: theme.palette.primary.main
   },
   avatar: {
-    paddingRight: "20px"
+
   }
 }));
 
 export default function AddPost(props) {
   const classes = useStyles();
+  
+  function updatePostData(data) {
+    props.onChange(data)
+  }
+
+  const { user, postData } = props;
+  const { text, pictures } = postData;
 
   return (
     <div>
@@ -60,35 +71,62 @@ export default function AddPost(props) {
         <Fade in={props.open}>
           <div className={classes.paper}>
             <Container >
-              <Grid container={"column"}>
-                <Grid item spacing={4} height="100%">
-                  <div className={classes.avatar}>
-                    <Avatar
-                      src={"https://lh3.googleusercontent.com/ogw/ADGmqu-pwHEOTj0WSDdjvNS48YAf47SprbVrJ8aLoUkdXRo=s320-c-mo"}
+            <Grid container justify={"center"} spacing={3}>
+              <Grid item xs={2}>
+                <div className={classes.avatar}>
+                  <Avatar 
+                      src={user.profilePicture}
                     >
-                        {"YK"}
-                    </Avatar>
-                  </div>
-                </Grid>
-                <Grid item spacing={4}>
-                  <div className={classes.textbox}>
-                    <TextField
-                      id="outlined-textarea"
-                      variant="outlined"
-                      label="What is on your mind..."
-                      multiline
-                      rowsMax={10}
-                      rows={10}
-                    />
-                  </div>
-                </Grid>
-                
-                
+                      {user.firstName.substr(0, 1) + user.lastName.substr(0, 1)}
+                  </Avatar>
+                </div>
+              </Grid>
+              <Grid item xs={10} >
+                <TextField
+                  style={{
+                    width: "100%",
+                    height: "10%"
+                  }}
+                  id="text-text-input"
+                  variant="outlined"
+                  label="What is on your mind..."
+                  value={text}
+                  multiline
+                  rowsMax={8}
+                  rows={10}
+                  onChange={(event) => updatePostData({ text: event.target.value })}
+                />
+              </Grid>
+              <Grid item xs={12} >
+                  <TextField
+                    style={{
+                      width: "100%",
+                    }}
+                    value={pictures}
+                    id="picture-text-input"
+                    variant="outlined"
+                    label="Add image URLs, separate with comma (,)"
+                    onChange={(event) => updatePostData({ pictures: event.target.value })}
+                  />
+              </Grid>
+                <Grid item xs={5} justify={"center"} padding={5}>
+                  <Button
+                    style={{
+                      width: "100%",
+                      marginLeft: "auto",
+                      marginRight: "auto",
+                    }}
+                    variant="contained" 
+                    color="primary"
+                    id="post-button"
+                    endIcon={<PostAddIcon />}
+                    onClick={() => props.onPost()}
+                  >
+                    POST
+                  </Button>
+                </Grid>   
               </Grid>
             </Container>
-            
-            
-            
           </div>
         </Fade>
       </Modal>

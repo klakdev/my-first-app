@@ -93,7 +93,9 @@ route.get("/:id", async (req, res, next) => {
 
 route.post("/", async (req, res) => {
   const { body } = req;
-  const { userId } = req.cookies;
+  //const { userId } = req.cookies;
+  
+  const userId = "95c1cb7df28db479";
   try {
     const post = validatePost({ ...body, userId });
     const db = await getDB();

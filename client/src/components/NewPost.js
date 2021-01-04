@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import { Avatar, InputAdornment } from '@material-ui/core';
@@ -15,15 +15,46 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function MultilineTextFields() {
-  const classes = useStyles();
-  const [value, setDisabled] = React.useState(false);
-  const [isModalOpen, setModalOpen] = React.useState(false);
 
+/**
+ * 
+ * @param {object} props 
+ * @param {User} props.user 
+ */
+export default function NewPost(props) {
+  const classes = useStyles();
+  const [postData, setPostData] = useState({
+    text: null,
+    pictures: null
+  })
+  const [isModalOpen, setModalOpen] = useState(false);
+
+  const { user } = props;
+  if(!user) {
+    return <div></div>
+  }
+
+
+  function sendPost() {
+    setModalOpen(false);
+    props.sendPost(postData)
+    setPostData({
+      text: null,
+      pictures: null
+    })
+  }
+
+  function updatePostData(data) {
+    setPostData({
+      text: data.text || postData.text,
+      pictures: data.pictures || postData.pictures
+    })
+  }
 
   return (
     <div className={classes.root}>
       <TextField
+        size="medium"
         id="outlined-textarea"
         placeholder="What is on your mind..."
         variant="outlined"
@@ -31,10 +62,10 @@ export default function MultilineTextFields() {
         InputProps={{
           startAdornment: (
             <InputAdornment position="start">
-              <Avatar
-                src={"https://lh3.googleusercontent.com/ogw/ADGmqu-pwHEOTj0WSDdjvNS48YAf47SprbVrJ8aLoUkdXRo=s320-c-mo"}
-              >
-                  {"YK"}
+                <Avatar 
+                  src={user.profilePicture}
+                >
+                  {user.firstName.substr(0, 1) + user.lastName.substr(0, 1)}
               </Avatar>
             </InputAdornment>
           ),
@@ -44,6 +75,10 @@ export default function MultilineTextFields() {
       <AddPost 
         open={isModalOpen}
         onClose={() => setModalOpen(false)}
+        onChange={updatePostData}
+        onPost={sendPost}
+        postData={postData}
+        user={user}
       />
     </div>
   );

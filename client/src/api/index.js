@@ -4,6 +4,12 @@ const axios = require("axios");
 module.exports = function({
   host, port,
 }){
+
+  const instance = axios.create({
+    baseURL: `http://${host}:${port}`,
+    headers: {'Cookie': 'userId=95c1cb7df28db479'},
+  })
+  
   return {
     /**
      * 
@@ -11,8 +17,8 @@ module.exports = function({
      */
     getPosts: async function (params) {
       try {
-        const response = await axios({
-          baseURL: `http://${host}:${port}/post`,
+        const response = await instance({
+          url: "/post",
           params
         });
         return response.data.map((p) => {
@@ -31,8 +37,28 @@ module.exports = function({
         console.error(e);
       }
     },
-    sendPost() {
+    async sendPost(postData) {
+      const { text, pictures } = postData;
+      try {
+        const response = await instance.post(`/post`, {
+          text: text || "",
+          pictures: pictures ? pictures.split(",") : []
+        });
+        return response.data;
+      } catch(e) {
+        console.error(e);
+      }
 
+    },
+    async getUser() {
+      try {
+        const response = await instance({
+          url: `/user/95c1cb7df28db479`,
+        });
+        return response.data;
+      } catch(e) {
+        console.error(e);
+      }
     }
   }
 }

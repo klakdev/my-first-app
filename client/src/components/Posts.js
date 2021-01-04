@@ -26,21 +26,63 @@ const useStyles = makeStyles((theme) => ({
 const Posts = () => {
   const styles = useStyles();  
   const [posts, setPosts] = useState([]);
+  const [offset, setOffset] = useState(0);
+  const [user, setUser] = useState(null);
+
+  
+  const trackScrolling = () => {
+    const wrappedElement = document.getElementById('posts-root');
+    if (isBottom(wrappedElement)) {
+      api.getPosts({ offset }).then((newPosts) => {
+        console.log("post %j", newPosts);
+        setPosts([...posts, ...newPosts]);
+      })
+      document.removeEventListener('scroll', trackScrolling);
+    }
+  };
+
+  document.addEventListener('scroll', trackScrolling);
+
+
+  const isBottom=(el) =>{
+    return el.getBoundingClientRect().bottom <= window.innerHeight;
+  }
 
   useEffect(() => {
-    
+  
     if(!posts.length) {
-      api.getPosts({ offset: 0 }).then((newPosts) => {
-        console.log(newPosts);
+      api.getPosts({ offset }).then((newPosts) => {
+        console.log("post %j", newPosts);
         setPosts(newPosts);
+        setOffset(offset + newPosts.length);
       })
     }
   })
 
+  useEffect(() => {
+    if(!user) {
+      api.getUser().then((user) => {
+        console.log("user %j", user);
+        setUser(user);
+      })
+    }
+  })
+
+
+  async function sendPost(postData) {
+    const post = await api.sendPost(postData);
+    console.log(post);
+    setPosts([{post, user}, ...posts]);
+  }
+
   return (
-    <div className={styles.postContainer}>
+    <div className={styles.postContainer} id={"posts-root"}>
       <Grid direction={"column"} spacing={"8px"}>
-        <NewPost />
+      <NewPost 
+        user={user}
+        sendPost={sendPost}
+      >
+      </NewPost>
       {posts.map((post) => {
         return (
           <Grid className={styles.post}>
