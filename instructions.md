@@ -1,68 +1,257 @@
-# Instructions
+# Instructions for setting up before workshop
 
-## Preparing the workspace
 
-1. Create dev directory `mkdir my-first-app`
-2. Initialize git `git init`
-3. Add ignore files from [node-gitignore](https://github.com/github/gitignore/blob/master/Node.gitignore )
-4. Install node-env [cross-env](https://www.npmjs.com/package/cross-env)
-5. Create gitignore file `mkdir .gitignore`
-6. Install nodemon npm i save-dev nodemon [nodemon](https://www.npmjs.com/package/nodemon)
-7. Create folder for client and for server `mkdir client && mkdir server`
-8. Go into the server folder cd server
-9. Initialize node Npm init
-10. Add express to package.json
-11. Npm i. node modules appears, color is different since it is ignored by git.
-12. Create an index file
-13. Import [express](https://expressjs.com/ )
-14. Run [express hello world example](https://expressjs.com/en/starter/hello-world.html)
-15. show the example on the browser
-16. add the run server command in package.json using node nodemon
-17. add command to main package.json
-18. add a test.http file
-19. run request on test file
-20. show how to debug it.
+## Set up a running server
 
-## Basic project structure
+### Here I'll describe in detail the exact steps to take in order to set up a running server the architecture that will be used during the workshop
 
-1. draw the basic structure of the project. TODO
-2. explain about different types of http methods
+1. open cmd, cd to root and create development directory
 
-## building a router for managing user information
+    ``` bash
+    cd c:\ && mkdir dev
+    ```
 
-1. create a users folder
-2. create user route on "/user"
-3. create an array of users - will be are db for now
-4. add a route to get a user. it will search in the array and return the user object
-5. test from http client [http://localhost:3000/user/123456](http://localhost:3000/user/123456)
-6. add [body-parser](https://www.npmjs.com/package/) middleware
-7. create a post method for creating a user
-8. explain about the importance of data validation
-9. install [validator](https://www.npmjs.com/package/validator) for validations - `npm i validator`
-10. create a validation function for user
-11. test the post and patch methods
-12. show invalid request
-13. show valid request
-14. show how previous request are returned
-15. update validation function with enforce
-16. explain why id in in brackets ([]) in JSDocs
-17. create a patch method for updating a user,
-18. make the validation function work well with patch as well
-19. explain the principle of [idempotent](https://stackoverflow.com/questions/31089221/what-is-the-difference-between-put-post-and-patch)
-20. delete method
+2. cd to directory
 
-## DB schema
+    ``` bash
+    cd dev
+    ```
 
-1. create a `app_user` user using phAdmin
-2. give him supper user permissions
-3. create `app` database with the `app_user` the owner
-4. grant permissions to `app_user` on the database
-5. give connection limit to the database - explain
-6. all databases are created with a public schema
-7. create a table `user` with all needed columns
-8. insert and request data from the db
+3. create project directory and cd to it
 
-## Using an ORM
+    ```bash
+    mkdir first-app && cd first-app
+    ```
 
-1. install [sequelize](https://sequelize.org/) and [pg](https://node-postgres.com/)
-2. sequelize [documentation](https://sequelize.org/master/identifiers.html)
+4. open vscode
+  
+    ```bash
+    code .
+    ```
+
+5. open terminal
+6. Initialize git
+  
+    ```bash
+    git init
+    ```
+
+7. create file called `.gitignore`
+
+8. copy node ignore file content from [node-gitignore](https://github.com/github/gitignore/blob/master/Node.gitignore )
+
+9. initialize package
+
+    ```bash
+    npm init
+    ```
+
+10. create a folder for server and cd to it
+
+    ```bash
+    mkdir server && cd server
+    ```
+
+11. install [cross-env](https://www.npmjs.com/package/cross-env) as dev dependency
+
+    This package will allow us to define environment variables in our scripts ignoring the os we are running on
+
+    ```bash
+    npm install cross-env --save-dev
+    ```
+
+12. install [nodemon](https://www.npmjs.com/package/nodemon) as dev dependency
+
+    This package will allow us to automatically restarting the node application when file changes in the directory are detected.
+
+    ```bash
+    npm install nodemon --save-dev
+    ```
+
+13. initialize package
+
+    ```bash
+      npm init
+    ```
+
+14. install the following dependencies
+    * [body-parser](https://www.npmjs.com/package/body-parser)
+    * [cookie-parser](https://www.npmjs.com/package/cookie-parser)
+    * [express](https://expressjs.com/)
+    * [pg](https://node-postgres.com/)
+    * [pg-hstore](https://www.npmjs.com/package/pg-hstore)
+    * [sequelize](https://sequelize.org/)
+
+    ```bash
+      npm i body-parser cookie-parser express pg pg-hstore sequelize
+    ```
+
+    The `package.json` file should now lock as following
+
+    ```json
+      "dependencies": {
+        "body-parser": "^1.19.0",
+        "cookie-parser": "^1.4.5",
+        "express": "^4.17.1",
+        "pg": "^8.5.1",
+        "pg-hstore": "^2.3.3",
+        "sequelize": "^6.3.5"
+      },
+      "devDependencies": {
+        "cross-env": "^7.0.3",
+        "nodemon": "^2.0.7"
+      }
+    ```
+
+15. under server create a file called `index.js`
+
+16. copy the [express hello world example](https://expressjs.com/en/starter/hello-world.html) to the file
+
+    ```javascript
+      const express = require('express')
+      const app = express()
+      const port = 3000
+
+      app.get('/', (req, res) => {
+        res.send('Hello World!')
+      })
+
+      app.listen(port, () => {
+        console.log(`Example app listening at http://localhost:${port}`)
+      })
+    ```
+
+17. run the server
+
+    ```bash
+    node .
+    ```
+
+    you should see the following output
+
+    `Example app listening at http://localhost:3000`
+
+18. open browser and hit localhost:3000
+
+    should print `Hello World`
+
+## Using a rest client
+
+### This section will provide instructions for using the built in vscode rest client
+
+1. under the server folder create a file called `rest.http`
+2. add the following lines to the file
+
+    ```wget
+      GET http://localhost:3000 HTTP/1.1
+
+      ###
+    ```
+
+3. if you have installed the [rest-client](https://marketplace.visualstudio.com/items?itemName=humao.rest-client) plugin a `Send Request` button will appear above.
+
+    click it, you should get the following results in a separate tab
+
+    ```wget
+      HTTP/1.1 200 OK
+      X-Powered-By: Express
+      Content-Type: text/html; charset=utf-8
+      Content-Length: 12
+      ETag: W/"c-Lve95gjOVATpfV8EL5X4nxwjKHE"
+      Date: Fri, 15 Jan 2021 12:50:24 GMT
+      Connection: close
+
+      Hello World!
+    ```
+
+## scripts
+
+### In this section I will describe ways for making it easier to build and debug a server while developing
+
+1. in the server folder, this `package.json` file add the following script
+
+    ```json
+      "start": "cross-env DEBUG=* nodemon ."
+    ```
+
+2. run the script
+
+    ```bash
+      npm start
+    ```
+
+3. go into the index.js file and change the text from `Hello World` to `Hello Fullstack Course`
+
+4. save the file and run request from `rest.http` file, the content should change
+
+## Set the port from environment variables
+
+### In order to have the ability to control the port the server is running on without changing the code we will set the port from an environment variable
+
+1. in the start script add the following environment variable
+
+    ```bash
+      "cross-env DEBUG=* PORT=3001 nodemon ./index.js"
+    ```
+
+2. in the index.js file change the port to be assigned from the environment variable
+
+    ```javascript
+    const port = process.env.PORT || 3000
+    ```
+
+### debugging the server
+
+In the server `package json` you should have a debug button above the scripts section. clicking the debug button will allow you to run any of the scripts.
+
+1. choose the start script
+
+2. add a breakpoint in the `index.js` file on the middleware handling the request
+
+3. send request from `rest.http` file
+
+4. server should break.
+
+## setting up the client
+
+### in ths section Ill describe how to set up the react application for the client
+
+1. open console on root of project
+
+2. initialize a react project, this might take some time so go grab a coffee (;
+
+    ```bash
+    npx create-react-app client
+    ```
+
+3. open the client `package.json` file and install the following dependencies
+
+* @material-ui/core
+* @material-ui/icons
+* axios
+* react-material-ui-carousel
+
+```bash
+  npm i  @material-ui/core @material-ui/icons axios react-material-ui-carousel
+```
+
+Your dependencies section should look as following
+
+  ```json
+  "dependencies": {
+    "@material-ui/core": "^4.11.2",
+    "@material-ui/icons": "^4.11.2",
+    "@testing-library/jest-dom": "^5.11.6",
+    "@testing-library/react": "^11.2.2",
+    "@testing-library/user-event": "^12.6.0",
+    "axios": "^0.21.1",
+    "react": "^17.0.1",
+    "react-dom": "^17.0.1",
+    "react-material-ui-carousel": "^2.1.1",
+    "react-scripts": "4.0.1",
+    "react-scroll": "^1.8.1",
+    "web-vitals": "^0.2.4"
+  },
+  ```
+  
+## Good Luck
