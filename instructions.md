@@ -98,6 +98,7 @@
         "pg": "^8.5.1",
         "pg-hstore": "^2.3.3",
         "sequelize": "^6.3.5",
+        "aws-sdk": "2.828.0",
         "validator": "^13.5.2"
       },
       "devDependencies": {
