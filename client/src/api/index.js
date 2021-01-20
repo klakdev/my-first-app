@@ -7,7 +7,6 @@ module.exports = function({
 
   const instance = axios.create({
     baseURL: `http://${host}:${port}`,
-    headers: {'Cookie': 'userId=95c1cb7df28db479'},
   })
   
   return {
@@ -38,22 +37,27 @@ module.exports = function({
       }
     },
     async sendPost(postData) {
-      const { text, pictures } = postData;
+      const { text } = postData;
       try {
         const response = await instance.post(`/post`, {
           text: text || "",
-          pictures: pictures ? pictures.split(",") : []
+          pictures: [
+            "https://klakdev-my-first-app.s3.amazonaws.com/girl-447701_1920.jpg",
+            "https://klakdev-my-first-app.s3.amazonaws.com/road-5904909_1920.jpg"
+          ]
         });
         return response.data;
       } catch(e) {
         console.error(e);
       }
-
     },
-    async getUser() {
+    async login() {
+      const num = Math.floor(Math.random() * 100000) + 1244; 
       try {
-        const response = await instance({
-          url: `/user/95c1cb7df28db479`,
+        const response = await instance.post("/user", {
+          email: `yaki.klein${num}@gmail.com`,
+          firstName: "yaki",
+          lastName: "klein"
         });
         return response.data;
       } catch(e) {

@@ -1,32 +1,12 @@
 const crypto = require('crypto');
 const express = require("express");
 const validator = require("validator");
-const getDB = require("../db");
 
-
-const route = express.Router();
-
-/**
- * @typedef {object} User
- * @property {string} id 
- * @property {string} firstName 
- * @property {string} lastName
- * @property {string} email
- * @property {string} profilePicture
- * @property {string} birthday
- * 
- */
-
-/**
- * this is an in memory array used for demonstrating the behavior of th different apis
- * @type {User[]} users
- */
-const users = [];
 
 /**
  * 
- * @param {user} body
- * @returns {user}
+ * @param {User} body
+ * @returns {User}
  */
 function validateUser(body, enforce) {
   if(!body) {
@@ -55,91 +35,84 @@ function validateUser(body, enforce) {
   }
 }
 
-route.get("/:id", async (req, res, next) => {
-  const { id } = req.params;
-  //for in memory usage
-  //const user = users.find(user => user.id === req.params.id);
-  if("string" !== typeof id || id.length !== 16) {
+function init(db) {
+  const route = express.Router();
+  route.get("/:id", async (req, res, next) => {
+    const { id } = req.params;
+  
+    if("string" !== typeof id || id.length !== 16) {
+      next();
+      return;
+    }
+  
+    const user = await db.user.findById(id);
+    if(user) {
+      res.json(user.toJSON());
+      return;
+    }
     next();
-    return;
-  }
-
-  const db = await getDB();
-  const user = await db.user.findOne({ where: { id } });
-  if(user) {
-    res.json(user.toJSON());
-    return;
-  }
-  next();
-});
-
-
-route.post("/", async (req, res) => {
-  const { body } = req;
-  try {
-    const user = validateUser(body, false);
-    //for in memory usage
-    //users.push(user);
-    const db = await getDB();
-    const newUser = await db.user.create(user);
-    res.cookie("userId", newUser.id);
-    res.json(newUser);
-  } catch(e) {
-    res.status(422).json({
-      error: e.message,
-    })
-  }
-})
-
-route.patch("/:id", async (req, res, next) => {
-  const { body, params: { id } } = req;
-  try {
-    const db = await getDB();
-    const oldUser = await db.user.findOne({ where: { id }, json: true });
-    if(!oldUser) {
-      return next()
+  });
+  
+  route.post("/", async (req, res) => {
+    const { body } = req;
+    try {
+      const userData = validateUser(body, false);
+  
+      const user = await db.user.create(userData);
+      res.cookie("userId", user.id, {
+        httpOnly: true,
+        secure: true,
+      });
+      res.json(user);
+    } catch(e) {
+      res.status(422).json({
+        error: e.message,
+      })
     }
+  })
+  
+  route.patch("/:id", async (req, res, next) => {
+    const { body, params: { id } } = req;
+    try {
 
-    const updatedUser = validateUser({ ...oldUser.toJSON(), ...body }, false);
-    //for in memory usage
-    //users.splice(userIndex, 1, updatedUser);
-    const [_result, users] = await db.user.update(updatedUser, { 
-      where: { id }, 
-      returning: true,
-      fields: Object.keys(body)
-    });
-    res.json(users[0].toJSON());
-  } catch(e) {
-    res.status(422).json({
-      error: e.message,
-    })
-  }
-})
-
-route.delete("/:id", async (req, res, next) => {
-  const { params: { id } } = req;
-  try {
-    //in memory db
-    //const userIndex = users.findIndex(user => user.id === req.params.id);
-    const db = await getDB();
-    const user = await db.user.destroy({ 
-      where: { id }
-    });
-    if(user === 0) {
-      return next()
+      const oldUser = await db.user.findOne({ where: { id }, json: true });
+      if(!oldUser) {
+        return next()
+      }
+  
+      const updatedUser = validateUser({ ...oldUser.toJSON(), ...body }, false);
+      const user = await db.user.update(updatedUser, Object.keys(body))
+  
+      res.json(user);
+    } catch(e) {
+      res.status(422).json({
+        error: e.message,
+      })
     }
-    //users.splice(userIndex, 1);
-    res.send("OK");
-  } catch(e) {
-    res.status(422).json({
-      error: e.message,
-    })
-  }
-})
+  })
+  
+  route.delete("/:id", async (req, res, next) => {
+    const { params: { id } } = req;
+    try {
+      const success = await db.user.delete(id);
+      if(success) {
+        return next()
+      }
+      res.send("OK");
+    } catch(e) {
+      res.status(422).json({
+        error: e.message,
+      })
+    }
+  })
+
+  return route;
+}
+
 
 const ROUTE_PATH = "/user"
 
 module.exports = {
-  route,
+  init,
   ROUTE_PATH
 }

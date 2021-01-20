@@ -1,22 +1,7 @@
 const crypto = require('crypto');
 const express = require("express");
 const validator = require("validator");
-const getDB = require("../db");
-
-
-const route = express.Router()
-
-
-/**
- * @typedef {object} Post
- * @property {string} id 
- * @property {string} userId 
- * @property {string} text 
- * @property {string[]} pictures
- * @property {string} date
- * 
- */
-
+const AWS = require("aws-sdk");
 
 /**
  * 
@@ -58,107 +43,115 @@ function validatePost(body, enforce) {
   }
 }
 
-route.get("/", async (req, res) => {
-  const { query: { offset }} = req;
-  const db = await getDB();
-  const posts = await db.post.findAll({ 
-    include: "user",
-    limit: 7,
-    offset: parseInt(offset) || undefined
+
+function init(db) {
+
+  const s3 = new AWS.S3();
+  const route = express.Router();
+
+  route.get("/", async (req, res) => {
+    const { query: { offset }} = req;
+    const nextPosts = await db.post.findNext({ limit: 7, offset });
+    res.json(nextPosts);
   });
-  res.json(posts.map(p => p.toJSON()));
-});
 
-
-
-
-route.get("/:id", async (req, res, next) => {
-  const { id } = req.params;
-  if("string" !== typeof id || id.length !== 16) {
-    next();
-    return;
-  }
-  const db = await getDB();
-  const post = await db.post.findOne({ 
-    where: { id },
-    include: "user"
-  });
-  if(post) {
-    res.json(post.toJSON());
-    return;
-  }
-  next();
-});
-
-
-route.post("/", async (req, res) => {
-  const { body } = req;
-  //const { userId } = req.cookies;
-  
-  const userId = "95c1cb7df28db479";
-  try {
-    const post = validatePost({ ...body, userId });
-    const db = await getDB();
-    const newPost = await db.post.create(post);
-    res.json(newPost);
-  } catch(e) {
-    res.status(422).json({
-      error: e.message,
-    })
-  }
-})
-
-route.patch("/:id", async (req, res, next) => {
-  const { body, params: { id }, cookies: { userId } } = req;
-  try {
-    const db = await getDB();
-    const oldPost = await db.post.findOne({ where: { id }, json: true });
-    
-    if(!oldPost) {
-      return next()
+  route.get("/signedUrl", async (req, res) => {
+    const { fileName } = req.query;
+    const key = `${crypto.randomBytes(8).toString("hex")}-${fileName}`;
+    const params = {
+      Bucket: 'klakdev-my-first-app',
+      Key: key,
+      ACL: 'public-read',
+    };
+    try {
+      const url = await s3.getSignedUrlPromise('putObject', params);
+      res.json({ url });
     }
-    
-    if( userId !== oldPost.userId) {
-      return res.status(403).status({
-        error: "not permitted"
+    catch(e) {
+      res.status(503).end();
+    }
+  })
+  
+  
+  
+  
+  route.get("/:id", async (req, res, next) => {
+    const { id } = req.params;
+    if("string" !== typeof id || id.length !== 16) {
+      next();
+      return;
+    }
+    const post = await db.post.findById(id);
+    if(post) {
+      res.json(post.toJSON());
+      return;
+    }
+    next();
+  });
+  
+  
+  route.post("/", async (req, res) => {
+    const { body } = req;
+    let { userId } = req.cookies;
+
+    try {
+      const post = validatePost({ ...body, userId });
+      const newPost = await db.post.create(post);
+      res.json(newPost);
+    } catch(e) {
+      res.status(422).json({
+        error: e.message,
       })
     }
-    
-    const updatedPost = validatePost({ ...oldPost.toJSON(), ...body,  });
-    const [_result, posts] = await db.post.update(updatedPost, { 
-      where: { id }, 
-      returning: true,
-    });
-    res.json(posts[0].toJSON());
-  } catch(e) {
-    res.status(422).json({
-      error: e.message,
-    })
-  }
-})
-
-route.delete("/:id", async (req, res, next) => {
-  const { params: { id } } = req;
-  try {
-    const db = await getDB();
-    const count = await db.post.destroy({ 
-      where: { id }
-    });
-    if(count === 0) {
-      return next()
+  })
+  
+  route.patch("/:id", async (req, res, next) => {
+    const { body, params: { id }, cookies: { userId } } = req;
+    try {
+      const oldPost = await db.post.findById(id);
+      
+      if(!oldPost) {
+        return next()
+      }
+      
+      if( userId !== oldPost.userId) {
+        return res.status(403).status({
+          error: "not permitted"
+        })
+      }
+      
+      const updatedPost = validatePost({ ...oldPost.toJSON(), ...body,  });
+      const post = await db.post.update(updatedPost);
+      res.json(post);
+    } catch(e) {
+      res.status(422).json({
+        error: e.message,
+      })
     }
-    res.send("OK");
-  } catch(e) {
-    res.status(422).json({
-      error: e.message,
-    })
-  }
-})
+  })
+  
+  route.delete("/:id", async (req, res, next) => {
+    const { params: { id } } = req;
+    try {
+      const count = await db.post.delete(id);
+      if(count === 0) {
+        return next()
+      }
+      res.send("OK");
+    } catch(e) {
+      res.status(422).json({
+        error: e.message,
+      })
+    }
+  })
+  return route;
+}
+
 
 const ROUTE_PATH = "/post"
 
 module.exports = {
-  route,
+  init,
   ROUTE_PATH
 }
 

@@ -49,7 +49,6 @@ const Posts = () => {
   }
 
   useEffect(() => {
-  
     if(!posts.length) {
       api.getPosts({ offset }).then((newPosts) => {
         console.log("post %j", newPosts);
@@ -61,7 +60,7 @@ const Posts = () => {
 
   useEffect(() => {
     if(!user) {
-      api.getUser().then((user) => {
+      api.login().then((user) => {
         console.log("user %j", user);
         setUser(user);
       })
@@ -72,7 +71,7 @@ const Posts = () => {
   async function sendPost(postData) {
     const post = await api.sendPost(postData);
     console.log(post);
-    setPosts([{post, user}, ...posts]);
+    setPosts([{ post, user }, ...posts]);
   }
 
   return (

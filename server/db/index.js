@@ -1,6 +1,6 @@
 
-const { User, init: initUser } = require("./user");
-const { Post, init: initPost } = require("./post");
+const { init: initUser, User } = require("./user");
+const { init: initPost, Post } = require("./post");
 const { getConnection } = require("./connection");
 
 /**
@@ -9,7 +9,6 @@ const { getConnection } = require("./connection");
  * @property {Post} post
  * @property {boolean} initialized
  */
-
 const db = {
   initialized: false,
   user: null,

@@ -1,13 +1,13 @@
 
-GET http://localhost:3001/user/95c1cb7df28db479 HTTP/1.1
+GET http://localhost:3001/user/fde2e13ec481dfc1 HTTP/1.1
 
 ###
 
-POST  http://localhost:3000/user HTTP/1.1
+POST  http://localhost:3001/user HTTP/1.1
 content-type: application/json
 
 {
-  "email": "yaki15@gmail.com",
+  "email": "yaki.klein12dsd@gmail.com",
   "firstName": "yaki",
   "lastName": "klein"
 }

@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import PostAddIcon from '@material-ui/icons/PostAdd';
 import { Avatar, Backdrop, Button, Container, Fade, Grid, Modal } from '@material-ui/core';
-
+import Image from 'material-ui-image';
 
 const useStyles = makeStyles((theme) => ({
   body:{
@@ -46,9 +46,14 @@ const useStyles = makeStyles((theme) => ({
 
 export default function AddPost(props) {
   const classes = useStyles();
+  const [images, setImages] = useState([]);
   
   function updatePostData(data) {
     props.onChange(data)
+  }
+
+  function addImage(image) {
+    setImages([...images, image]) 
   }
 
   const { user, postData } = props;
@@ -97,17 +102,35 @@ export default function AddPost(props) {
                   onChange={(event) => updatePostData({ text: event.target.value })}
                 />
               </Grid>
-              <Grid item xs={12} >
-                  <TextField
-                    style={{
-                      width: "100%",
-                    }}
-                    value={pictures}
-                    id="picture-text-input"
-                    variant="outlined"
-                    label="Add image URLs, separate with comma (,)"
-                    onChange={(event) => updatePostData({ pictures: event.target.value })}
+              <Grid item xs={3} >
+                <Button
+                  variant="contained"
+                  component="label"
+                >
+                  Add files
+                  <input 
+                    type="file"
+                    hidden
+                    onChange={(e) => {
+                      addImage(e.target.files[0])
+                      e.target.value = null;
+                    }} 
                   />
+                </Button>
+                  
+              </Grid>
+              <Grid item xs={9} justify={"center"} padding={5}>
+                {images.map(image => {
+                  return (
+                    <img
+                      src={URL.createObjectURL(image)}
+                      alt=""
+                      height="50px"
+                      width="auto"
+                    >
+                    </img>
+                  )
+                })} 
               </Grid>
                 <Grid item xs={5} justify={"center"} padding={5}>
                   <Button
@@ -120,7 +143,10 @@ export default function AddPost(props) {
                     color="primary"
                     id="post-button"
                     endIcon={<PostAddIcon />}
-                    onClick={() => props.onPost()}
+                    onClick={() => {
+                      props.onPost();
+                      setImages([]);
+                    }}
                   >
                     POST
                   </Button>
