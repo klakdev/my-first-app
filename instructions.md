@@ -81,9 +81,11 @@
     * [pg](https://node-postgres.com/)
     * [pg-hstore](https://www.npmjs.com/package/pg-hstore)
     * [sequelize](https://sequelize.org/)
+    * aws-sdk
+    * validator
 
     ```bash
-      npm i body-parser cookie-parser express pg pg-hstore sequelize
+      npm i body-parser cookie-parser express pg pg-hstore sequelize aws-sdk validator
     ```
 
     The `package.json` file should now lock as following
@@ -95,7 +97,9 @@
         "express": "^4.17.1",
         "pg": "^8.5.1",
         "pg-hstore": "^2.3.3",
-        "sequelize": "^6.3.5"
+        "sequelize": "^6.3.5",
+        "aws-sdk": "2.828.0",
+        "validator": "^13.5.2"
       },
       "devDependencies": {
         "cross-env": "^7.0.3",
@@ -232,7 +236,7 @@ In the server `package json` you should have a debug button above the scripts se
 * react-material-ui-carousel
 
 ```bash
-  npm i  @material-ui/core @material-ui/icons axios react-material-ui-carousel
+  npm i  @material-ui/core @material-ui/icons axios react-material-ui-carousel aws-sdk
 ```
 
 Your dependencies section should look as following
@@ -250,7 +254,8 @@ Your dependencies section should look as following
     "react-material-ui-carousel": "^2.1.1",
     "react-scripts": "4.0.1",
     "react-scroll": "^1.8.1",
-    "web-vitals": "^0.2.4"
+    "web-vitals": "^0.2.4",
+    "aws-sdk"
   },
   ```
   
