@@ -7,8 +7,32 @@ module.exports = function({
 
   const instance = axios.create({
     baseURL: `http://${host}:${port}`,
-  })
+  });
+
+  async function uploadImage(image) {
+    const response = await instance({
+      url: "/post/signedUrl",
+      params: {
+        fileName: image.name,
+      }
+    });
   
+    const { signedUrl, url } = response.data;
+    const { type } = image;
+    await axios.put(signedUrl, image, {
+      headers: {
+        'Content-Type': type
+      }
+    })
+      .then(result => {
+        console.log("Response from s3")
+      })
+      .catch(error => {
+        console.error("ERROR ", error);
+      })
+    return url;
+  }
+
   return {
     /**
      * 
@@ -37,14 +61,15 @@ module.exports = function({
       }
     },
     async sendPost(postData) {
-      const { text } = postData;
+      const { text, pictures } = postData;
+      const urls = await Promise.all(
+        pictures.map((picture) => {
+          return uploadImage(picture);
+      }))
       try {
         const response = await instance.post(`/post`, {
           text: text || "",
-          pictures: [
-            "https://klakdev-my-first-app.s3.amazonaws.com/girl-447701_1920.jpg",
-            "https://klakdev-my-first-app.s3.amazonaws.com/road-5904909_1920.jpg"
-          ]
+          pictures: urls
         });
         return response.data;
       } catch(e) {
@@ -58,11 +83,13 @@ module.exports = function({
           email: `yaki.klein${num}@gmail.com`,
           firstName: "yaki",
           lastName: "klein"
+        }, {
+          withCredentials: true 
         });
         return response.data;
       } catch(e) {
         console.error(e);
       }
-    }
+    },
   }
 }

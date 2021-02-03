@@ -52,8 +52,14 @@ export default function AddPost(props) {
     props.onChange(data)
   }
 
-  function addImage(image) {
-    setImages([...images, image]) 
+  function addImage(picture) {
+    updatePostData({
+      pictures: [...pictures, picture]
+    })
+  }
+
+  function sendPost() {
+    props.onPost();
   }
 
   const { user, postData } = props;
@@ -120,7 +126,7 @@ export default function AddPost(props) {
                   
               </Grid>
               <Grid item xs={9} justify={"center"} padding={5}>
-                {images.map(image => {
+                {pictures.map(image => {
                   return (
                     <img
                       src={URL.createObjectURL(image)}
@@ -144,8 +150,7 @@ export default function AddPost(props) {
                     id="post-button"
                     endIcon={<PostAddIcon />}
                     onClick={() => {
-                      props.onPost();
-                      setImages([]);
+                      sendPost();
                     }}
                   >
                     POST

@@ -24,8 +24,8 @@ const useStyles = makeStyles((theme) => ({
 export default function NewPost(props) {
   const classes = useStyles();
   const [postData, setPostData] = useState({
-    text: null,
-    pictures: null
+    text: [],
+    pictures: []
   })
   const [isModalOpen, setModalOpen] = useState(false);
 
@@ -34,13 +34,12 @@ export default function NewPost(props) {
     return <div></div>
   }
 
-
   function sendPost() {
     setModalOpen(false);
     props.sendPost(postData)
     setPostData({
-      text: null,
-      pictures: null
+      text: [],
+      pictures: []
     })
   }
 

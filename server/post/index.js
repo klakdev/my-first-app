@@ -64,8 +64,11 @@ function init(db) {
       ACL: 'public-read',
     };
     try {
-      const url = await s3.getSignedUrlPromise('putObject', params);
-      res.json({ url });
+      const signedUrl = await s3.getSignedUrlPromise('putObject', params);
+      res.json({
+        url: signedUrl.split("?")[0],
+        signedUrl,
+      });
     }
     catch(e) {
       res.status(503).end();
@@ -94,6 +97,7 @@ function init(db) {
     const { body } = req;
     let { userId } = req.cookies;
 
+    userId = userId || "5047bbd142ad4ea8";
     try {
       const post = validatePost({ ...body, userId });
       const newPost = await db.post.create(post);
